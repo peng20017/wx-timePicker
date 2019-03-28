@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>WX_Picker自定义年月日时分</title>
+    <link
+      rel="stylesheet"
+      href="https://res.wx.qq.com/open/libs/weui/1.1.3/weui.min.css"
+    />
+  </head>
+  <body>
+      <input type="text" id="datetime-picker">
+  </body>
+  <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+  <script src="https://res.wx.qq.com/open/libs/weuijs/1.0.0/weui.min.js"></script>
+  <script>
+    var now = new Date();
+    var year = now.getFullYear(); //年
+    var month = now.getMonth() + 1; //月
+    var day = now.getDate(); //日
+    var hour = now.getHours(); //小时
+    var order_time = `${year}-${month}-${day} ${hour}:00:00`;
+
+// 日期选择控件
+    var yearList = [String(year), String(year+1), String(year+2), String(year+3)];
+	var monthList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+	var dayList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18",
+				"19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"
+			];
+	var hourLlist = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18",
+				"19", "20", "21", "22", "23", "24"
+			];
+	var dataList = [];
+	var index = 0;
+        for (var i = 0; i < yearList.length; i++) {
+            if (year <= +yearList[i]) {
+                var a = {};
+                a.value = yearList[i];
+                a.label = `${yearList[i]}年`;
+                index++;
+                a.children = [];
+                for (var j = 0; j < monthList.length; j++) {
+                    var b = {};
+                    b.label = `${monthList[j]}月`;
+                    b.value = monthList[j];
+                    index++;
+                    if (year == +yearList[i]) {
+                        if (month - 1 <= j) {
+                            a.children[a.children.length] = b;
+                        }
+                    } else {
+                        a.children[a.children.length] = b;
+                    }
+                    b.children = [];
+                    for (var o = 0; o < dayList.length; o++) {
+                        var c = {};
+                        c.label = `${dayList[o]}日`;
+                        c.value = dayList[o];
+                        index++;
+                        if (month == +monthList[j]) {
+                            if (day - 1 <= o) {
+                                b.children[b.children.length] = c;
+                            }
+                        } else {
+                            b.children[b.children.length] = c;
+                        }
+                        c.children = [];
+                        for (var p = 0; p < hourLlist.length; p++) {
+                            var d = {};
+                            d.label = `${hourLlist[p]}时`;
+                            d.value = hourLlist[p];
+                            index++;
+                            if (day == +dayList[o]) {
+                                if (hour - 1 <= p) {
+                                    c.children[c.children.length] = d;
+                                }
+                            } else {
+                                c.children[c.children.length] = d;
+                            }
+                        }
+                        if (j + 1 == 4 || j + 1 == 6 || j + 1 == 0 || j + 1 == 11) {
+                            if (o == 29) o = 31;
+                        } else if (j + 1 == 2) {
+                            if (
+                                (+yearList[i] % 4 == 0 && +yearList[i] % 100 != 0) ||
+                                +yearList[i] % 400 == 0
+                            ) {
+                                if (o == 28) o = 31;
+                            } else {
+                                if (o == 27) o = 31;
+                            }
+                        }
+                    }
+                }
+                dataList[dataList.length] = a;
+            }
+        }
+        var appointment = '';
+        $('.icon-picker').click(function () {
+            $("#datetime-picker").click();
+        })
+        $("#datetime-picker").click(function () {
+            weui.picker(dataList, {
+                className: "custom-classname",
+                container: "body",
+                defaultValue: [year, month, day, hour],
+                onChange: function (result) {},
+                onConfirm: function (result) {
+                    appointment = result[0] + "年" + result[1] + "月" + result[2] + "日" + result[3] + "时";
+                    $("#datetime-picker").val(appointment)
+                    order_time = `${result[0]}-${result[1]}-${result[2]} ${result[3]}:00:00`
+                },
+                id: "datetime-picker"
+            });
+        });
+
+
+
+
+
+
+
+  </script>
+</html>
